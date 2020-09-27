@@ -149,7 +149,7 @@ VKAPI_ATTR VkResult VKAPI_CALL RPIFUNC(vkAllocateCommandBuffers)(
 			pCommandBuffers[c]->computePipelineDirty = 1;
 			pCommandBuffers[c]->subpassDirty = 1;
 			pCommandBuffers[c]->blendConstantsDirty = 1;
-			pCommandBuffers[c]->scissorDirty = 1;
+			pCommandBuffers[c]->scissorDirty = 0;
 			pCommandBuffers[c]->depthBoundsDirty = 1;
 			pCommandBuffers[c]->stencilCompareMaskDirty = 1;
 			pCommandBuffers[c]->stencilWriteMaskDirty = 1;
@@ -970,7 +970,7 @@ VKAPI_ATTR VkResult VKAPI_CALL RPIFUNC(vkResetCommandBuffer)(
 	commandBuffer->computePipelineDirty = 1;
 	commandBuffer->subpassDirty = 1;
 	commandBuffer->blendConstantsDirty = 1;
-	commandBuffer->scissorDirty = 1;
+	commandBuffer->scissorDirty = 0;
 	commandBuffer->depthBoundsDirty = 1;
 	commandBuffer->stencilCompareMaskDirty = 1;
 	commandBuffer->stencilWriteMaskDirty = 1;
