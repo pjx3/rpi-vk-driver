@@ -61,7 +61,7 @@ static uint32_t drawCommon(VkCommandBuffer commandBuffer, int32_t vertexOffset)
 		cb->lineWidthDirty = 0;
 	}
 
-	//if(cb->viewportDirty)
+	if(cb->viewportDirty)
 	{
 		//Clip Window
 		clFit(&commandBuffer->binCl, V3D21_CLIP_WINDOW_length);
@@ -81,6 +81,28 @@ static uint32_t drawCommon(VkCommandBuffer commandBuffer, int32_t vertexOffset)
 		clInsertViewPortOffset(&commandBuffer->binCl, vp.width * 0.5f + vp.x, vp.height * 0.5f + vp.y);
 
 		cb->viewportDirty = 0;
+	}
+
+	if(cb->scissorDirty)
+	{
+		VkRect2D sc = cb->scissor;
+
+		//Clip Window
+		clFit(&commandBuffer->binCl, V3D21_CLIP_WINDOW_length);
+		clInsertClipWindow(&commandBuffer->binCl,
+						   sc.extent.width,
+						   sc.extent.height,
+						   sc.offset.y, 	//bottom pixel coord
+						   sc.offset.x); 	//left pixel coord
+
+		//Vulkan conventions, Y flipped [1...-1] bottom->top
+		//Clipper XY Scaling
+		clFit(&commandBuffer->binCl, V3D21_CLIPPER_XY_SCALING_length);
+		clInsertClipperXYScaling(&commandBuffer->binCl, 
+								 (float)(sc.extent.width) * 0.5f * 16.0f, 
+								 (float)(sc.extent.height) * 0.5f * 16.0f);
+
+		cb->scissorDirty = 0;
 	}
 
 	//if(cb->depthBiasDirty || cb->depthBoundsDirty)
