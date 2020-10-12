@@ -538,7 +538,7 @@ void* vc4_bo_map(int fd, uint32_t bo, uint32_t offset, uint32_t size)
 	return map;
 }
 
-void vc4_cl_submit(int fd, struct drm_vc4_submit_cl* submit, uint64_t* lastEmittedSeqno, uint64_t* lastFinishedSeqno)
+int vc4_cl_submit(int fd, struct drm_vc4_submit_cl* submit, uint64_t* lastEmittedSeqno, uint64_t* lastFinishedSeqno)
 {
 	assert(fd);
 	assert(submit);
@@ -552,7 +552,8 @@ void vc4_cl_submit(int fd, struct drm_vc4_submit_cl* submit, uint64_t* lastEmitt
 		fprintf(stderr, "Draw call returned %s.  "
 			   "Expect corruption.\n", strerror(errno));
 		warned = 1;
-		assert(0);
+		//assert(0);
+		return ret;
 	} else if (!ret) {
 		*lastEmittedSeqno = submit->seqno;
 	}
@@ -568,6 +569,8 @@ void vc4_cl_submit(int fd, struct drm_vc4_submit_cl* submit, uint64_t* lastEmitt
 			fprintf(stderr, "Job throttling failed\n");
 		}
 	}
+
+	return ret;
 }
 
 uint32_t vc4_create_perfmon(int fd, uint32_t* counters, uint32_t num_counters)

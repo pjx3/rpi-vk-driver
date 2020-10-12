@@ -596,6 +596,17 @@ VKAPI_ATTR VkResult VKAPI_CALL RPIFUNC(vkQueueSubmit)(
 				submitCl.shader_rec_count = marker->shaderRecCount;
 				submitCl.uniforms_size = marker->uniformsSize;
 
+				assert(marker->numDrawCallsSubmitted <= VC4_HW_2116_COUNT);
+
+				assert(submitCl.bo_handle_count > 0);
+
+				//submit ioctl
+				int ret = vc4_cl_submit(controlFd, &submitCl, &queue->lastEmitSeqno, &queue->lastFinishedSeqno);
+				if (ret)
+				{
+
+#define RPI_PRINT_COMMAND_LISTS 0
+
 #ifndef RPI_PRINT_COMMAND_LISTS
 	#define RPI_PRINT_COMMAND_LISTS 0
 #endif
@@ -713,15 +724,10 @@ VKAPI_ATTR VkResult VKAPI_CALL RPIFUNC(vkQueueSubmit)(
 				printf("clear s %u\n", submitCl.clear_s);
 				printf("flags %u\n", submitCl.flags);
 				printf("perfmonID %u\n", submitCl.perfmonid);
+
+				//assert(0);
 #endif
 
-				assert(marker->numDrawCallsSubmitted <= VC4_HW_2116_COUNT);
-
-				assert(submitCl.bo_handle_count > 0);
-
-				{
-					//submit ioctl
-					vc4_cl_submit(controlFd, &submitCl, &queue->lastEmitSeqno, &queue->lastFinishedSeqno);
 				}
 
 				//see if it's a sync bug
